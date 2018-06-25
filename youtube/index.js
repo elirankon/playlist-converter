@@ -2,6 +2,7 @@ const { init } = require('./youtubeAuth');
 const youtubeHelper = require('./youtubeHelper');
 
 module.exports = {
-  search: youtubeHelper.getItemsFromPlaylist,
+  extract: youtubeHelper.getItemsFromPlaylist,
   init,
+  name: () => 'Youtube',
 };
