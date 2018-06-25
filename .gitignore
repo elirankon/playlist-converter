@@ -1,0 +1,4 @@
+node_modules/
+
+youtube/client_secret.json
+.DS_Store
