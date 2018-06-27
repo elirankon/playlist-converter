@@ -3,6 +3,7 @@ const youtubeHelper = require('./youtubeHelper');
 
 module.exports = {
   extract: youtubeHelper.getItemsFromPlaylist,
+  create: () => {},
   init,
-  name: () => 'Youtube',
+  name: () => 'YouTube',
 };

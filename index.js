@@ -1,13 +1,24 @@
-const readline = require('readline');
-const util = require('util');
+const vorpal = require('vorpal')();
 const youtube = require('./youtube');
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
+const services = [youtube];
+
+//youtube.init();
+
+vorpal.delimiter('pConverter:>');
+vorpal
+  .command('services', 'Services related commands')
+  .option('-l, --list', 'List all available services')
+  .action((args, callback) => {
+    if (args.options.list) {
+      vorpal.session.log(services.map(service => service.name()).join('\n'));
+    }
+
+    callback();
+  });
+
+vorpal.command('source <source>', 'Specify source service').action((args, callback) => {
+  callback();
 });
 
-youtube.init().then(async (auth) => {
-  const results = await youtube.search({ auth, id: 'PL6JIi0t5bs5bonWA1HRYJhp208ZSAR4dz' });
-  console.log(util.inspect(results, true, 4, true));
-}).catch(console.error);
+vorpal.show();
