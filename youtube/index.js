@@ -5,5 +5,5 @@ module.exports = {
   extract: youtubeHelper.getItemsFromPlaylist,
   create: () => {},
   init,
-  name: () => 'YouTube',
+  name: () => 'youtube',
 };
