@@ -23,6 +23,6 @@ module.exports = (cli) => {
     );
 
     cli.command('services youtube list loaded', 'Shows videos ready for conversion').action((args, callback) => {
-        callback(youtubeHelper.listLoaded());
+        callback(youtubeHelper.listLoaded().join('\n'));
     });
 };

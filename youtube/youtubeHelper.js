@@ -132,7 +132,7 @@ async function searchAndGeneratePlaylist({ auth, items, title } = {}) {
 }
 
 function listLoaded() {
-    return sourceItems.join('\n');
+    return sourceItems;
 }
 module.exports = {
     getItemsFromPlaylist,

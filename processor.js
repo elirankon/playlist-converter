@@ -10,7 +10,5 @@ module.exports = {
         if (service) targetService = service;
         return targetService;
     },
-    start: async () => {
-        // TODO: implement conversion
-    },
+    start: async () => targetService.generate(sourceService.getSourceItems()),
 };
