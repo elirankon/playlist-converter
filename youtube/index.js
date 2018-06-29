@@ -1,9 +1,6 @@
-const { init } = require('./youtubeAuth');
-const youtubeHelper = require('./youtubeHelper');
+const commands = require('./commands');
 
-module.exports = {
-  extract: youtubeHelper.getItemsFromPlaylist,
-  create: () => {},
-  init,
+module.exports = cli => ({
   name: () => 'youtube',
-};
+  commands: commands(cli),
+});

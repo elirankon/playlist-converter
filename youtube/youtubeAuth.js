@@ -15,7 +15,7 @@ const TOKEN_PATH = `${TOKEN_DIR}youtube.json`;
 
 let authToken;
 
-function storeToken(token) {
+function storeToken(cliSession, token) {
   try {
     fs.mkdirSync(TOKEN_DIR);
   } catch (err) {
@@ -25,34 +25,32 @@ function storeToken(token) {
   }
   fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
     if (err) throw err;
-    console.log(`Token stored to ${TOKEN_PATH}`);
+    cliSession.log(`Token stored to ${TOKEN_PATH}`);
   });
 }
 
-function getNewToken(oauth2Client, callback) {
+function getNewToken(cliSession, oauth2Client, callback) {
   const authUrl = oauth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: SCOPES,
   });
-  console.log('Authorize this app by visiting this url: ', authUrl);
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-  rl.question('Enter the code from that page here: ', (code) => {
-    rl.close();
-    oauth2Client.getToken(code, (err, token) => {
-      if (err) {
-        console.error('Error while trying to retrieve access token', err);
-      }
-      oauth2Client.credentials = token;
-      storeToken(token);
-      callback(oauth2Client);
-    });
-  });
+  cliSession.log('Authorize this app by visiting this url: ', authUrl);
+  cliSession.prompt(
+    { type: 'input', name: 'code', message: 'Enter the code from that page here:' },
+    (result) => {
+      oauth2Client.getToken(result.code, (err, token) => {
+        if (err) {
+          console.error('Error while trying to retrieve access token', err);
+        }
+        oauth2Client.credentials = token;
+        storeToken(cliSession, token);
+        callback(oauth2Client);
+      });
+    },
+  );
 }
 
-function authorize(credentials, callback) {
+function authorize(cliSession, credentials, callback) {
   const clientSecret = credentials.installed.client_secret;
   const clientId = credentials.installed.client_id;
   const redirectUrl = credentials.installed.redirect_uris[0];
@@ -61,21 +59,21 @@ function authorize(credentials, callback) {
   // Check if we have previously stored a token.
   fs.readFile(TOKEN_PATH, (err, token) => {
     if (err) {
-      return getNewToken(oauth2Client, callback);
+      return getNewToken(cliSession, oauth2Client, callback);
     }
     oauth2Client.credentials = JSON.parse(token);
     callback(oauth2Client);
   });
 }
 
-function init() {
+function init(cliSession) {
   return new Promise((resolve, reject) => {
     fs.readFile(`${__dirname}/client_secret.json`, (err, content) => {
       if (err) {
         reject(new Error(`Error loading client secret file: ${err}`));
       }
       // Authorize a client with the loaded credentials, then call the YouTube API.
-      authorize(JSON.parse(content), (token) => {
+      authorize(cliSession, JSON.parse(content), (token) => {
         resolve(token);
       });
     });

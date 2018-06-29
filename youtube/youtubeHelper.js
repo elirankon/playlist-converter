@@ -39,7 +39,6 @@ function fetchItemsFromApi({
   });
 }
 
-
 async function getItemsFromPlaylist(params) {
   let plItems = [];
   await fetchAndIterate(fetchItemsFromApi, params, async (results) => {
@@ -49,6 +48,87 @@ async function getItemsFromPlaylist(params) {
 
   return plItems;
 }
+
+function searchForVideo({ auth, query } = {}) {
+  return new Promise((resolve, reject) => {
+    const params = {
+      auth,
+      q: query,
+      type: 'video',
+      part: 'snippet',
+      maxResults: 1,
+    };
+
+    const service = google.youtube('v3');
+    service.search.list(params, (err, response) => {
+      if (err) reject(err);
+
+      const result = response.items[0];
+      console.log(`found video ${result.snippet.title} for query ${query}`);
+      resolve(result.id.videoId);
+    });
+  });
+}
+
+function addItemToPlaylist({ auth, playlistId, videoId }) {
+  return new Promise((resolve, reject) => {
+    const params = {
+      auth,
+      part: 'snippet',
+      resource: {
+        snippet: {
+          playlistId,
+          videoId,
+          kind: 'youtube#video',
+        },
+      },
+    };
+
+    const service = google.youtube('v3');
+    service.playlistItems.insert(params, (err, response) => {
+      if (err) return reject(err);
+
+      console.debug('add item response', response);
+      return resolve();
+    });
+  });
+}
+
+function createPlaylist({ auth, title } = {}) {
+  return new Promise((resolve, reject) => {
+    if (!title) reject(new Error('You must provide a title'));
+    const service = google.youtube('v3');
+    service.playlists.insert(
+      {
+        auth,
+        part: 'snippet,status',
+        resource: {
+          snippet: {
+            title,
+          },
+          status: {
+            privacyStatus: 'private',
+          },
+        },
+      },
+      (err, response) => {
+        if (err) return reject(err);
+
+        return resolve(response.result.id);
+      },
+    );
+  });
+}
+
+async function searchAndGeneratePlaylist({ auth, items, title } = {}) {
+  const videoIds = await Promise.all(items.map(item => searchForVideo({ auth, query: item })));
+  const playlistId = await createPlaylist({ auth, title });
+
+  await Promise.all(videoIds.map(videoId => addItemToPlaylist({ auth, playlistId, videoId })));
+
+  return playlistId;
+}
 module.exports = {
   getItemsFromPlaylist,
+  searchAndGeneratePlaylist,
 };
