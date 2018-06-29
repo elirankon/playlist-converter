@@ -1,20 +1,36 @@
 const vorpal = require('vorpal')();
 const config = require('./config.json');
+const processor = require('./processor');
 
 const services = [];
+const nameToService = {};
 config.services.forEach((service) => {
-  // eslint-disable-next-line import/no-dynamic-require, global-require
-  services.push(require(service.path)(vorpal));
+    // eslint-disable-next-line import/no-dynamic-require, global-require
+    const reqService = require(service.path)(vorpal);
+    services.push(reqService);
+    nameToService[reqService.name()] = reqService;
 });
 
 vorpal.delimiter('pConverter:>');
 vorpal.command('services list', 'Services related commands').action((args, callback) => {
-  vorpal.session.log(services.map(service => service.name()).join('\n'));
-  callback();
+    callback(services.map(service => service.name()).join('\n'));
 });
 
-vorpal.command('source <source>', 'Specify source service').action((args, callback) => {
-  callback();
+vorpal
+    .command('set <service>', 'Sets the source service')
+    .option('-t, --target', 'sets the target service')
+    .option('-s, --source', 'sets the source service')
+    .action((args, callback) => {
+        if (!nameToService[args.service]) return callback('There is no service by this name');
+
+        processor[`${args.options.source ? 'source' : 'target'}Service`](
+            nameToService[args.service],
+        );
+        callback(`${args.options.source ? 'source' : 'target'} set to ${args.service}`);
+    });
+
+vorpal.command('start', 'Starts the conversion').action((args, callback) => {
+    processor.start().then(callback);
 });
 
 vorpal.show();
