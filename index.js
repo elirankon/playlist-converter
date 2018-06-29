@@ -29,8 +29,16 @@ vorpal
         callback(`${args.options.source ? 'source' : 'target'} set to ${args.service}`);
     });
 
-vorpal.command('start', 'Starts the conversion').action((args, callback) => {
-    processor.start().then(callback);
-});
+vorpal
+    .command('start', 'Starts the conversion')
+    .option('-t, --title', 'target playlist title')
+    .action((args, callback) => {
+        processor
+            .start({ title: args.options.title })
+            .then(callback)
+            .catch((err) => {
+                callback('something went wrong: ', err);
+            });
+    });
 
 vorpal.show();

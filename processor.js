@@ -10,5 +10,5 @@ module.exports = {
         if (service) targetService = service;
         return targetService;
     },
-    start: async () => targetService.generate(sourceService.getSourceItems()),
+    start: async ({ title }) => targetService.generate({ items: sourceService.getSourceItems(), title }),
 };

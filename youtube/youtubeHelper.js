@@ -2,6 +2,7 @@ const { google } = require('googleapis');
 const { fetchAndIterate } = require('./utils');
 
 let sourceItems = [];
+let auth;
 
 function processAutoGenerateYTMusicVideo(video) {
     const { title } = video.snippet;
@@ -16,9 +17,7 @@ function processAutoGenerateYTMusicVideo(video) {
         .replace(/\W/g, ' ');
 }
 
-function fetchItemsFromApi({
-    auth, id, limit = 50, next,
-} = {}) {
+function fetchItemsFromApi({ id, limit = 50, next } = {}) {
     return new Promise((resolve, reject) => {
         const service = google.youtube('v3');
         const params = {
@@ -41,7 +40,7 @@ function fetchItemsFromApi({
     });
 }
 
-async function getItemsFromPlaylist({ auth, id } = {}) {
+async function getItemsFromPlaylist({ id } = {}) {
     sourceItems = [];
     await fetchAndIterate(fetchItemsFromApi, { auth, id }, async (results) => {
         sourceItems = sourceItems.concat(results.items);
@@ -51,7 +50,7 @@ async function getItemsFromPlaylist({ auth, id } = {}) {
     return sourceItems.length;
 }
 
-function searchForVideo({ auth, query } = {}) {
+function searchForVideo({ query } = {}) {
     return new Promise((resolve, reject) => {
         const params = {
             auth,
@@ -63,16 +62,15 @@ function searchForVideo({ auth, query } = {}) {
 
         const service = google.youtube('v3');
         service.search.list(params, (err, response) => {
-            if (err) reject(err);
-
-            const result = response.items[0];
+            if (err) return reject(err);
+            const result = response.data.items[0];
             console.log(`found video ${result.snippet.title} for query ${query}`);
             resolve(result.id.videoId);
         });
     });
 }
 
-function addItemToPlaylist({ auth, playlistId, videoId }) {
+function addItemToPlaylist({ playlistId, videoId }) {
     return new Promise((resolve, reject) => {
         const params = {
             auth,
@@ -90,13 +88,13 @@ function addItemToPlaylist({ auth, playlistId, videoId }) {
         service.playlistItems.insert(params, (err, response) => {
             if (err) return reject(err);
 
-            console.debug('add item response', response);
+            console.debug('add item response', response.data);
             return resolve();
         });
     });
 }
 
-function createPlaylist({ auth, title } = {}) {
+function createPlaylist({ title } = {}) {
     return new Promise((resolve, reject) => {
         if (!title) reject(new Error('You must provide a title'));
         const service = google.youtube('v3');
@@ -106,7 +104,8 @@ function createPlaylist({ auth, title } = {}) {
                 part: 'snippet,status',
                 resource: {
                     snippet: {
-                        title,
+                        title: title || '',
+                        description: 'auto created by pConverter',
                     },
                     status: {
                         privacyStatus: 'private',
@@ -116,13 +115,13 @@ function createPlaylist({ auth, title } = {}) {
             (err, response) => {
                 if (err) return reject(err);
 
-                return resolve(response.result.id);
+                return resolve(response.data.id);
             },
         );
     });
 }
 
-async function searchAndGeneratePlaylist({ auth, items, title } = {}) {
+async function searchAndGeneratePlaylist({ items, title } = {}) {
     const videoIds = await Promise.all(items.map(item => searchForVideo({ auth, query: item })));
     const playlistId = await createPlaylist({ auth, title });
 
@@ -138,4 +137,7 @@ module.exports = {
     getItemsFromPlaylist,
     searchAndGeneratePlaylist,
     listLoaded,
+    setAuth: (newAuth) => {
+        auth = newAuth;
+    },
 };
