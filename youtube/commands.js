@@ -20,19 +20,4 @@ module.exports = (cli) => {
                 .then(addedCount => callback(`Loaded ${addedCount} videos from playlist ${args.playlist}`));
         },
     );
-
-    cli.command('youtube list loaded', 'Shows videos ready for conversion').action(
-        (args, callback) => {
-            callback(youtubeHelper.listLoaded().join('\n'));
-        },
-    );
-
-    cli.command('youtube create playlist <title>', 'Creates a playlist').action(
-        (args, callback) => {
-            youtubeHelper
-                .createPlaylist({ title: args.title })
-                .then(callback)
-                .catch(callback);
-        },
-    );
 };
