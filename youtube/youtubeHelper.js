@@ -42,7 +42,7 @@ function fetchItemsFromApi({ id, limit = 50, next } = {}) {
 
 async function getItemsFromPlaylist({ id } = {}) {
     sourceItems = [];
-    await fetchAndIterate(fetchItemsFromApi, { auth, id }, async (results) => {
+    await fetchAndIterate(fetchItemsFromApi, { id }, async (results) => {
         sourceItems = sourceItems.concat(results.items);
         return results.nextPage;
     });
@@ -78,8 +78,10 @@ function addItemToPlaylist({ playlistId, videoId }) {
             resource: {
                 snippet: {
                     playlistId,
-                    videoId,
-                    kind: 'youtube#video',
+                    resourceId: {
+                        videoId,
+                        kind: 'youtube#video',
+                    },
                 },
             },
         };
@@ -122,10 +124,10 @@ function createPlaylist({ title } = {}) {
 }
 
 async function searchAndGeneratePlaylist({ items, title } = {}) {
-    const videoIds = await Promise.all(items.map(item => searchForVideo({ auth, query: item })));
-    const playlistId = await createPlaylist({ auth, title });
-
-    await Promise.all(videoIds.map(videoId => addItemToPlaylist({ auth, playlistId, videoId })));
+    const videoIds = await Promise.all(items.map(item => searchForVideo({ query: item })));
+    const playlistId = await createPlaylist({ title });
+    console.log(`playlist ${title} created with Id: ${playlistId}`);
+    await Promise.all(videoIds.map(videoId => addItemToPlaylist({ playlistId, videoId })));
 
     return playlistId;
 }
@@ -140,4 +142,5 @@ module.exports = {
     setAuth: (newAuth) => {
         auth = newAuth;
     },
+    createPlaylist,
 };

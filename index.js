@@ -18,6 +18,7 @@ vorpal.command('services list', 'Services related commands').action((args, callb
 
 vorpal
     .command('set <service>', 'Sets the source service')
+    .autocomplete(services.map(service => service.name()))
     .option('-t, --target', 'sets the target service')
     .option('-s, --source', 'sets the source service')
     .action((args, callback) => {
