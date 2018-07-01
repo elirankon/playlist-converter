@@ -14,8 +14,9 @@ _Essentially what you see in other websites, but for free and in CLI._
  ## Client secret files
  You need to make sure you have secret files for each service you want to use:
 
- * [YouTube](https://developers.google.com/youtube/v3/quickstart/nodejs) - Follow Step 1.
- * Place each client file inside respective service directory. E.g., put the YouTube   
+ * [YouTube](https://developers.google.com/youtube/v3/quickstart/nodejs) - Follow Step 1 of the "Getting Started" page.
+ 
+ Place each client file inside respective service directory. E.g., put the YouTube   
  secret file inside the `youtube` folder.
 
  ## Issues?
