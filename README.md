@@ -21,7 +21,7 @@ _Essentially what you see in other websites, but for free and in CLI._
  ## Issues?
  Log them in the issue tracker please. If you want to add a service, you're more than welcome to implement it yourself!   
  _"But how do you do that?"_   
- Well, score right down! :point_down:
+ Well, scroll right down! :point_down:
 
  ## How to contribute?
   * Fork the repo :fork_and_knife:
@@ -42,6 +42,15 @@ _Essentially what you see in other websites, but for free and in CLI._
             }
         ]
     }
+    ```
+ * Your folder should have an `index.js` file that will expose the main interface   
+ and a `commands.js` file that will contain all the Vorpal commands for the service.   
+ Something like this:
+    ```
+    root
+    | - myawesomeservice
+    | - | - index.js
+    | - | - commands.js
     ```
  * Your `index.js` file should expose the following interface:
     ```js
