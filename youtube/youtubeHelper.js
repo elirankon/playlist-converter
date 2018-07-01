@@ -1,4 +1,5 @@
 const { google } = require('googleapis');
+const Promise = require('bluebird');
 const { fetchAndIterate } = require('./utils');
 
 let sourceItems = [];
@@ -87,10 +88,10 @@ function addItemToPlaylist({ playlistId, videoId }) {
         };
 
         const service = google.youtube('v3');
-        service.playlistItems.insert(params, (err, response) => {
+        service.playlistItems.insert(params, (err) => {
             if (err) return reject(err);
 
-            console.debug('add item response', response.data);
+            console.log(`video ${videoId} add to playlist ${playlistId}`);
             return resolve();
         });
     });
@@ -127,7 +128,9 @@ async function searchAndGeneratePlaylist({ items, title } = {}) {
     const videoIds = await Promise.all(items.map(item => searchForVideo({ query: item })));
     const playlistId = await createPlaylist({ title });
     console.log(`playlist ${title} created with Id: ${playlistId}`);
-    await Promise.all(videoIds.map(videoId => addItemToPlaylist({ playlistId, videoId })));
+    await Promise.map(videoIds, videoId => addItemToPlaylist({ playlistId, videoId }), {
+        concurrency: 1,
+    });
 
     return playlistId;
 }

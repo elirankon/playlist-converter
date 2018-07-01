@@ -32,7 +32,7 @@ vorpal
 
 vorpal
     .command('start', 'Starts the conversion')
-    .option('-t, --title', 'target playlist title')
+    .option('-t, --title <title>', 'target playlist title')
     .action((args, callback) => {
         processor
             .start({ title: args.options.title })

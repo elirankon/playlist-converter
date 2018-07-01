@@ -10,5 +10,12 @@ module.exports = {
         if (service) targetService = service;
         return targetService;
     },
-    start: async ({ title }) => targetService.generate({ items: sourceService.getSourceItems(), title }),
+    start: async ({ title }) => {
+        try {
+            await targetService.generate({ items: sourceService.getSourceItems(), title });
+            return 'Playlist converted!';
+        } catch (ex) {
+            throw ex;
+        }
+    },
 };
