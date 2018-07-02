@@ -2,6 +2,7 @@
 _An open source equivalent for migrating playlists between different streaming services_  
 
 [![Build Status](https://travis-ci.org/elirankon/playlist-converter.svg?branch=master)](https://travis-ci.org/elirankon/playlist-converter)
+[![Coverage Status](https://coveralls.io/repos/github/elirankon/playlist-converter/badge.svg)](https://coveralls.io/github/elirankon/playlist-converter)
 
 ## How to use?
  ```sh
