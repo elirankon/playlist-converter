@@ -8,8 +8,15 @@ _Essentially what you see in other websites, but for free and in CLI._
  $ cd playlist-converter
  $ npm i
  $ npm start
- pConverter:> help
+ $ pConverter:> services list
+ $ pConverter:> set [service_name] -s
+ $ pConverter:> set [service_name] -t
+ ... init and load stuff here
+ $ pConverter:> start -t "my converted playlist title"
  ```
+
+ Make sure you `init` source and target services and that you   
+ `load` the source playlist before hitting `start`.
 
  ## Client secret files
  You need to make sure you have secret files for each service you want to use:
