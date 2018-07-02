@@ -2,3 +2,4 @@ node_modules/
 .vscode
 youtube/client_secret.json
 .DS_Store
+.nyc_output

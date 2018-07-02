@@ -1,9 +1,15 @@
 {
     "extends": "airbnb",
+    "plugins": [
+        "mocha"
+    ],
     "rules": {
         "no-console": "off",
         "no-param-reassign": "off",
         "indent": ["error", 4],
         "consistent-return": "off"
+    },
+    "env": {
+        "mocha": true
     }
 }
