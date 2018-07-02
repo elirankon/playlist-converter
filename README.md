@@ -39,7 +39,8 @@ _Essentially what you see in other websites, but for free and in CLI._
         "services": [
             {
                 "name": "MyAwesomeService", // No spaces!!!
-                "path": "./relative/path/to/the/directory"
+                "path": "./relative/path/to/the/directory",
+                "clientSecretFileName": "my_client_secret_file.json"
             }
         ]
     }

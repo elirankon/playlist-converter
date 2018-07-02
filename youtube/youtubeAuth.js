@@ -1,7 +1,9 @@
 const fs = require('fs');
 const { google } = require('googleapis');
+const config = require('../config.json');
 
 const { OAuth2 } = google.auth;
+const youtubeConfig = config.services.find(service => service.name === 'youtube');
 
 const SCOPES = [
     'https://www.googleapis.com/auth/youtube',
@@ -67,7 +69,7 @@ function authorize(cliSession, credentials, callback) {
 
 function init(cliSession) {
     return new Promise((resolve, reject) => {
-        fs.readFile(`${__dirname}/client_secret.json`, (err, content) => {
+        fs.readFile(`${__dirname}/${youtubeConfig.clientSecretFileName}`, (err, content) => {
             if (err) {
                 reject(new Error(`Error loading client secret file: ${err}`));
             }

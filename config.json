@@ -2,7 +2,8 @@
   "services": [
     {
       "name": "youtube",
-      "path": "./youtube"
+      "path": "./youtube",
+      "clientSecretFileName": "client_secret.json"
     }
   ]
 }
