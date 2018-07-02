@@ -1,5 +1,5 @@
 # Playlist Converter
-_Essentially what you see in other websites, but for free and in CLI._  
+_An open source equivalent for migrating playlists between different streaming services_  
 
 
 ## How to use?
