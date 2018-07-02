@@ -116,7 +116,7 @@ function createPlaylist({ title } = {}) {
                 part: 'snippet,status',
                 resource: {
                     snippet: {
-                        title: title || '',
+                        title,
                         description: 'auto created by pConverter',
                     },
                     status: {
@@ -134,14 +134,18 @@ function createPlaylist({ title } = {}) {
 }
 
 async function searchAndGeneratePlaylist({ items, title } = {}) {
-    const videoIds = await Promise.all(items.map(item => searchForVideo({ query: item })));
-    const playlistId = await createPlaylist({ title });
-    console.log(`playlist ${title} created with Id: ${playlistId}`);
-    await Promise.map(videoIds, videoId => addItemToPlaylist({ playlistId, videoId }), {
-        concurrency: 1,
-    });
+    try {
+        const videoIds = await Promise.all(items.map(item => searchForVideo({ query: item })));
+        const playlistId = await createPlaylist({ title });
+        console.log(`playlist ${title} created with Id: ${playlistId}`);
+        await Promise.map(videoIds, videoId => addItemToPlaylist({ playlistId, videoId }), {
+            concurrency: 1,
+        });
 
-    return playlistId;
+        return playlistId;
+    } catch (ex) {
+        throw ex;
+    }
 }
 
 function listLoaded() {
@@ -153,6 +157,6 @@ module.exports = {
     listLoaded,
     setAuth: (newAuth) => {
         auth = newAuth;
+        return auth;
     },
-    createPlaylist,
 };
