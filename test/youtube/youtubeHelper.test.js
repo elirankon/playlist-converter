@@ -454,6 +454,8 @@ describe('youtubeHelper', () => {
                 items: ['bla', 'bli'],
                 title: 'bli bli',
             });
+
+            // eslint-disable-next-line
             expect(insertPlaylistItemStub).to.be.calledTwice;
         });
 
@@ -495,6 +497,7 @@ describe('youtubeHelper', () => {
                     },
                 });
 
+            // eslint-disable-next-line
             expect(
                 youtubeHelper.searchAndGeneratePlaylist({
                     items: ['bla', 'bli'],
