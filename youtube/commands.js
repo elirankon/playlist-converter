@@ -17,7 +17,8 @@ module.exports = (cli) => {
         (args, callback) => {
             youtubeHelper
                 .getItemsFromPlaylist({ id: args.playlist })
-                .then(addedCount => callback(`Loaded ${addedCount} videos from playlist ${args.playlist}`));
+                .then(addedCount => callback(`Loaded ${addedCount} videos from playlist ${args.playlist}`))
+                .catch(callback);
         },
     );
 };

@@ -32,7 +32,11 @@ function fetchItemsFromApi({ id, limit = 50, next } = {}) {
 
         service.playlistItems.list(params, (err, response) => {
             if (err || !response.data) {
-                reject(new Error(`The API returned an error: ${err}`));
+                return reject(
+                    new Error(
+                        `The API returned an error: ${err ? err.message : 'invalid response'}`,
+                    ),
+                );
             }
 
             const items = response.data.items.map(processAutoGenerateYTMusicVideo);
@@ -43,12 +47,15 @@ function fetchItemsFromApi({ id, limit = 50, next } = {}) {
 
 async function getItemsFromPlaylist({ id } = {}) {
     sourceItems = [];
-    await fetchAndIterate(fetchItemsFromApi, { id }, async (results) => {
-        sourceItems = sourceItems.concat(results.items);
-        return results.nextPage;
-    });
-
-    return sourceItems.length;
+    try {
+        await fetchAndIterate(fetchItemsFromApi, { id }, async (results) => {
+            sourceItems = sourceItems.concat(results.items);
+            return results.nextPage;
+        });
+        return sourceItems.length;
+    } catch (ex) {
+        throw ex;
+    }
 }
 
 function searchForVideo({ query } = {}) {
@@ -64,6 +71,7 @@ function searchForVideo({ query } = {}) {
         const service = google.youtube('v3');
         service.search.list(params, (err, response) => {
             if (err) return reject(err);
+
             const result = response.data.items[0];
             console.log(`found video ${result.snippet.title} for query ${query}`);
             resolve(result.id.videoId);
@@ -100,6 +108,7 @@ function addItemToPlaylist({ playlistId, videoId }) {
 function createPlaylist({ title } = {}) {
     return new Promise((resolve, reject) => {
         if (!title) reject(new Error('You must provide a title'));
+
         const service = google.youtube('v3');
         service.playlists.insert(
             {
