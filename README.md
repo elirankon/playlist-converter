@@ -1,6 +1,7 @@
 # Playlist Converter
 _An open source equivalent for migrating playlists between different streaming services_  
 
+[![Build Status](https://travis-ci.org/elirankon/playlist-converter.svg?branch=master)](https://travis-ci.org/elirankon/playlist-converter)
 
 ## How to use?
  ```sh
