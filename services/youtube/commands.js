@@ -1,4 +1,4 @@
-const { init } = require('./youtubeAuth');
+const youtubeAuth = require('./youtubeAuth');
 const youtubeHelper = require('./youtubeHelper');
 
 /* extract: youtubeHelper.getItemsFromPlaylist,
@@ -7,7 +7,7 @@ const youtubeHelper = require('./youtubeHelper');
   */
 module.exports = (cli) => {
     cli.command('youtube init', 'Initialise YouTube service').action((args, callback) => {
-        init(cli.session)
+        youtubeAuth.init(cli.session)
             .then((auth) => {
                 youtubeHelper.setAuth(auth);
                 callback('YouTube Initialized');

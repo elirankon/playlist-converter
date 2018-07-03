@@ -4,7 +4,7 @@ const sinon = require('sinon');
 
 const { expect } = chai;
 const app = require('../../index');
-const { init } = require('../../services/youtube/youtubeAuth');
+const youtubeAuth = require('../../services/youtube/youtubeAuth');
 const youtubeHelper = require('../../services/youtube/youtubeHelper');
 
 chai.use(sinonChai);
@@ -23,9 +23,7 @@ describe('youtube commands', () => {
 
         it('exits when youtubeHelper load rejects', (done) => {
             const error = { message: 'the message' };
-            const loadStub = sinon
-                .stub(youtubeHelper, 'getItemsFromPlaylist')
-                .rejects(error);
+            const loadStub = sinon.stub(youtubeHelper, 'getItemsFromPlaylist').rejects(error);
             vorpal.exec('youtube load gagaga', (response) => {
                 loadStub.restore();
                 expect(response).to.eql(error);
@@ -34,5 +32,30 @@ describe('youtube commands', () => {
         });
     });
 
-    describe('#init', () => {});
+    describe('#init', () => {
+        it('calls auth init and sets auth in youtube helper', (done) => {
+            const mockAuth = { ping: 'pong' };
+            const initStub = sinon.stub(youtubeAuth, 'init').resolves(mockAuth);
+            const setAuthStub = sinon.stub(youtubeHelper, 'setAuth');
+
+            vorpal.exec('youtube init', () => {
+                initStub.restore();
+                setAuthStub.restore();
+                expect(initStub).to.be.calledOnce; // eslint-disable-line
+                expect(setAuthStub).to.be.calledWith(mockAuth);
+                done();
+            });
+        });
+
+        it('exits when init fails', (done) => {
+            const initStub = sinon.stub(youtubeAuth, 'init').rejects({ message: 'oh oh' });
+
+            vorpal.exec('youtube init', (response) => {
+                initStub.restore();
+                expect(initStub).to.be.calledOnce; // eslint-disable-line 
+                expect(response).to.include('Something went wrong');
+                done();
+            });
+        });
+    });
 });
