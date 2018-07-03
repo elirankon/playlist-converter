@@ -1,7 +1,13 @@
 const ngrok = require('ngrok');
 const http = require('http');
 const opn = require('opn');
-const credentials = require('./client_secret.json');
+const fs = require('fs');
+const config = require('../../config.json').services.find(service => service.name === 'spotify');
+
+let credentials;
+// eslint-disable-next-line global-require
+if (fs.existsSync(`./${config.clientSecretFileName}`)) credentials = require('./client_secret.json');
+else credentials = {};
 
 const port = process.env.PORT || 5000;
 
