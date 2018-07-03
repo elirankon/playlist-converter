@@ -4,8 +4,8 @@ const sinon = require('sinon');
 
 const { expect } = chai;
 const app = require('../../index');
-const { init } = require('./youtubeAuth');
-const youtubeHelper = require('./youtubeHelper');
+const { init } = require('../../services/youtube/youtubeAuth');
+const youtubeHelper = require('../../services/youtube/youtubeHelper');
 
 chai.use(sinonChai);
 const vorpal = app.main();
