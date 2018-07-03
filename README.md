@@ -40,7 +40,7 @@ _An open source offering for migrating playlists between different streaming ser
   * GREAT SUCCESS! :moneybag:
 
 ## Contributing Guidelines
- * Create a folder for the service you're implementing in the project root.   
+ * Create a folder for the service you're implementing in the `services` folder.   
  All lowercase, no special chars.
  * Edit `config.json` and add your service to the `services` array.
     ```json
@@ -59,9 +59,10 @@ _An open source offering for migrating playlists between different streaming ser
  Something like this:
     ```
     root
-    | - myawesomeservice
-    | - | - index.js
-    | - | - commands.js
+    | - services
+    | - | - myawesomeservice
+    | - | - | - index.js
+    | - | - | - commands.js
     ```
  * Your `index.js` file should expose the following interface:
     ```js
@@ -73,6 +74,6 @@ _An open source offering for migrating playlists between different streaming ser
         generate: () => {},
     });
     ```
- * Look at the `youtube` directory as a sample for the rest of the things :smile_cat:
+ * Look at the `services/youtube` directory as a sample for the rest of the things :smile_cat:
 
 ### Big shout out to [Vorpal](http://vorpal.js.org/) for being super awesome!

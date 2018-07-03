@@ -5,7 +5,7 @@ const chance = require('chance').Chance();
 const sinonChai = require('sinon-chai');
 const chaiAsPromised = require('chai-as-promised');
 
-const youtubeHelper = require('../../youtube/youtubeHelper');
+const youtubeHelper = require('../../services/youtube/youtubeHelper');
 
 chai.use(chaiAsPromised);
 chai.use(sinonChai);

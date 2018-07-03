@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { google } = require('googleapis');
-const config = require('../config.json');
+const config = require('../../config.json');
 
 const { OAuth2 } = google.auth;
 const youtubeConfig = config.services.find(service => service.name === 'youtube');
@@ -26,6 +26,7 @@ function storeToken(cliSession, token) {
     }
     fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
         if (err) throw err;
+
         cliSession.log(`Token stored to ${TOKEN_PATH}`);
     });
 }
@@ -43,6 +44,7 @@ function getNewToken(cliSession, oauth2Client, callback) {
                 if (err) {
                     console.error('Error while trying to retrieve access token', err);
                 }
+
                 oauth2Client.credentials = token;
                 storeToken(cliSession, token);
                 callback(oauth2Client);
@@ -62,6 +64,7 @@ function authorize(cliSession, credentials, callback) {
         if (err) {
             return getNewToken(cliSession, oauth2Client, callback);
         }
+
         oauth2Client.credentials = JSON.parse(token);
         callback(oauth2Client);
     });
@@ -73,6 +76,7 @@ function init(cliSession) {
             if (err) {
                 reject(new Error(`Error loading client secret file: ${err}`));
             }
+
             // Authorize a client with the loaded credentials, then call the YouTube API.
             authorize(cliSession, JSON.parse(content), (token) => {
                 resolve(token);
