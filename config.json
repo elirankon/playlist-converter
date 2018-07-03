@@ -4,6 +4,11 @@
       "name": "youtube",
       "path": "./services/youtube",
       "clientSecretFileName": "client_secret.json"
+    },
+    {
+      "name": "spotify",
+      "path": "./services/spotify",
+      "clientSecretFileName": "client_secret.json"
     }
   ]
 }

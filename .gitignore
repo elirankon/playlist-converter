@@ -1,5 +1,5 @@
 node_modules/
 .vscode
-services/youtube/client_secret.json
+**/**/client_secret.json
 .DS_Store
 .nyc_output
