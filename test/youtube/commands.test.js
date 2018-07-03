@@ -11,24 +11,27 @@ chai.use(sinonChai);
 const vorpal = app.main();
 
 describe('youtube commands', () => {
-    let initStub;
-    let loadStub;
-
-    afterEach(() => {
-        initStub.restore();
-        loadStub.restore();
-    });
-
     describe('#load', () => {
         it('calls youtube helper to load files into memory', (done) => {
-            loadStub = sinon.stub(youtubeHelper, 'getItemsFromPlaylist').resolves();
+            const loadStub = sinon.stub(youtubeHelper, 'getItemsFromPlaylist').resolves();
             vorpal.exec('youtube load gagaga', () => {
+                loadStub.restore();
                 expect(loadStub).to.be.calledWithExactly({ id: 'gagaga' });
                 done();
             });
         });
 
-        it('exits when youtubeHelper load rejects', (done) => {});
+        it('exits when youtubeHelper load rejects', (done) => {
+            const error = { message: 'the message' };
+            const loadStub = sinon
+                .stub(youtubeHelper, 'getItemsFromPlaylist')
+                .rejects(error);
+            vorpal.exec('youtube load gagaga', (response) => {
+                loadStub.restore();
+                expect(response).to.eql(error);
+                done();
+            });
+        });
     });
 
     describe('#init', () => {});
