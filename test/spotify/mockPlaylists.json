@@ -1,0 +1,22 @@
+{
+    "body": {
+        "items": [
+            {
+                "name": "mock playlist 1",
+                "id": "1",
+                "owner": {
+                    "name": "mock owner",
+                    "id": "u1"
+                }
+            },
+            {
+                "name": "mock playlist 2",
+                "id": "2",
+                "owner": {
+                    "name": "mock owner",
+                    "id": "u1"
+                }
+            }
+        ]
+    }
+}

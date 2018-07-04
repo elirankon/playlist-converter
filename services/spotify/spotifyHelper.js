@@ -27,7 +27,7 @@ async function loadPlaylistTracks(userId, playlistId) {
         loadedItems = loadedItems.concat(response.body.items.map(extractValuesFromPlaylist));
         if (
             response.body.items.length === response.body.limit
-            && response.body.total > response.body.limit
+            && response.body.total > loadedItems.length
         ) {
             // eslint-disable-next-line radix
             return parseInt(response.body.limit) + parseInt(response.body.offset);
@@ -65,11 +65,13 @@ async function selectFollowingPlaylists(cliSession, params = {}) {
         loadedPlaylists = loadedPlaylists.concat(response.body.items);
         if (
             response.body.items.length === response.body.limit
-            && response.body.total > response.body.limit
+            && response.body.total > loadedPlaylists.length
         ) {
             return response.body.limit + response.body.offset;
         }
     });
+
+    if (loadedPlaylists.length === 0) throw new Error('User does not follow any playlists');
 
     return getUserPlaylistSelection(cliSession);
 }
@@ -90,4 +92,8 @@ module.exports = {
     },
     loadUserPlaylist,
     listLoaded,
+    resetLoadedItems: () => {
+        loadedItems = [];
+        loadedPlaylists = [];
+    },
 };

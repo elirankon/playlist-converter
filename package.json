@@ -9,7 +9,7 @@
         "test-local-with-coverage": "NODE_ENV=test ./node_modules/nyc/bin/nyc.js --check-coverage ./node_modules/mocha/bin/mocha --recursive",
         "lint": "./node_modules/eslint/bin/eslint.js '**/*.js'",
         "start": "node index.js",
-        "precommit": "npm run lint && npm run test-local-with-coverage"
+        "precommit": "npm run lint && npm run test-local"
     },
     "author": "Eliran Kononowicz",
     "repository": {
@@ -25,6 +25,7 @@
         "lodash": "^4.17.10",
         "ngrok": "^3.0.1",
         "opn": "^5.3.0",
+        "proxyquire": "^2.0.1",
         "spotify-web-api-node": "^3.1.1",
         "superagent": "^3.8.3",
         "vorpal": "^1.12.0"
