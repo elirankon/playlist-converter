@@ -24,6 +24,8 @@ _An open source offering for migrating playlists between different streaming ser
  You need to make sure you have secret files for each service you want to use:
 
  * [YouTube](https://developers.google.com/youtube/v3/quickstart/nodejs) - Follow Step 1 of the "Getting Started" page.
+
+ * [Spotify Setup](https://github.com/elirankon/playlist-converter/blob/master/docs/spotify.md)
  
  Place each client file inside respective service directory. E.g., put the YouTube   
  secret file inside the `youtube` folder.
