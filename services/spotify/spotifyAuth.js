@@ -4,11 +4,6 @@ const opn = require('opn');
 const fs = require('fs');
 const config = require('../../config.json').services.find(service => service.name === 'spotify');
 
-let credentials;
-// eslint-disable-next-line global-require
-if (fs.existsSync(`./${config.clientSecretFileName}`)) credentials = require('./client_secret.json');
-else credentials = {};
-
 const port = process.env.PORT || 5000;
 
 function setupServerForResponse() {
@@ -47,18 +42,26 @@ function promptUserWithUrl(cliSession) {
     });
 }
 
-function openWebBrowser(url) {
-    opn(
-        `https://accounts.spotify.com/authorize?client_id=${
-            credentials.client_id
-        }&redirect_uri=${encodeURIComponent(
-            `${url}/spotify`,
-        )}&scope=playlist-read-private%20user-read-email&response_type=token&state=123`,
-    );
+function openWebBrowser(cliSession, url) {
+    fs.readFile(`${__dirname}/${config.clientSecretFileName}`, (err, content) => {
+        if (err) {
+            cliSession.error('Failed to get client secret file');
+            return;
+        }
+
+        const credentials = JSON.parse(content);
+        opn(
+            `https://accounts.spotify.com/authorize?client_id=${
+                credentials.client_id
+            }&redirect_uri=${encodeURIComponent(
+                `${url}/spotify`,
+            )}&scope=playlist-read-private%20user-read-email&response_type=token&state=123`,
+        );
+    });
 }
 async function init(cliSession) {
     const url = await promptUserWithUrl(cliSession);
-    openWebBrowser(url);
+    openWebBrowser(cliSession, url);
     return setupServerForResponse();
 }
 module.exports = {

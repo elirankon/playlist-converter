@@ -1,6 +1,7 @@
 const { google } = require('googleapis');
 const Promise = require('bluebird');
-const { fetchAndIterate } = require('./utils');
+const _ = require('lodash');
+const { fetchAndIterate } = require('../../utils');
 
 let sourceItems = [];
 let auth;
@@ -73,7 +74,11 @@ function searchForVideo({ query } = {}) {
             if (err) return reject(err);
 
             const result = response.data.items[0];
-            console.debug(`found video ${result.snippet.title} for query ${query}`);
+            if (!result) {
+                console.debug(`no results for query ${query}`);
+                return resolve();
+            }
+
             resolve(result.id.videoId);
         });
     });
@@ -135,7 +140,9 @@ function createPlaylist({ title } = {}) {
 
 async function searchAndGeneratePlaylist({ items, title } = {}) {
     try {
-        const videoIds = await Promise.all(items.map(item => searchForVideo({ query: item })));
+        const videoIds = _.compact(
+            await Promise.all(items.map(item => searchForVideo({ query: item }))),
+        );
         const playlistId = await createPlaylist({ title });
         console.debug(`playlist ${title} created with Id: ${playlistId}`);
         await Promise.map(videoIds, videoId => addItemToPlaylist({ playlistId, videoId }), {
