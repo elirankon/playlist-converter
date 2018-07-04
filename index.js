@@ -4,6 +4,8 @@ const processor = require('./processor');
 
 function main() {
     const vorpal = new Vorpal();
+    if (process.env.NODE_ENV === 'test') vorpal.session.log = () => {};
+
     const services = [];
     const nameToService = {};
     config.services.forEach((service) => {

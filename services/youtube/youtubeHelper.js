@@ -73,7 +73,7 @@ function searchForVideo({ query } = {}) {
             if (err) return reject(err);
 
             const result = response.data.items[0];
-            console.log(`found video ${result.snippet.title} for query ${query}`);
+            console.debug(`found video ${result.snippet.title} for query ${query}`);
             resolve(result.id.videoId);
         });
     });
@@ -99,7 +99,7 @@ function addItemToPlaylist({ playlistId, videoId }) {
         service.playlistItems.insert(params, (err) => {
             if (err) return reject(err);
 
-            console.log(`video ${videoId} add to playlist ${playlistId}`);
+            console.debug(`video ${videoId} add to playlist ${playlistId}`);
             return resolve();
         });
     });
@@ -137,7 +137,7 @@ async function searchAndGeneratePlaylist({ items, title } = {}) {
     try {
         const videoIds = await Promise.all(items.map(item => searchForVideo({ query: item })));
         const playlistId = await createPlaylist({ title });
-        console.log(`playlist ${title} created with Id: ${playlistId}`);
+        console.debug(`playlist ${title} created with Id: ${playlistId}`);
         await Promise.map(videoIds, videoId => addItemToPlaylist({ playlistId, videoId }), {
             concurrency: 1,
         });
