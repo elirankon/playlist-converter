@@ -37,7 +37,7 @@ function promptUserWithUrl(cliSession) {
                     type: 'confirm',
                     name: 'continue',
                     default: true,
-                    message: `use this redirect uri in your spotify application ${url}/spotify and hit return when set`,
+                    message: `use this redirect uri in your spotify application: ${url}/spotify - hit return when set`,
                 },
                 () => {
                     resolve(url);
