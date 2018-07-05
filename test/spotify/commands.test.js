@@ -38,12 +38,35 @@ describe('spotify commands', () => {
             const mockAuth = 'mocki mocki';
             const initStub = sinon.stub(spotifyAuth, 'init').resolves(mockAuth);
             const setAuthStub = sinon.stub(spotifyHelper, 'setAuth');
+            const getMyIdStub = sinon.stub(spotifyHelper, 'getMyId');
 
             vorpal.exec('spotify init', () => {
                 initStub.restore();
                 setAuthStub.restore();
+                getMyIdStub.restore();
                 expect(initStub).to.be.calledOnce; // eslint-disable-line
                 expect(setAuthStub).to.be.calledWith(mockAuth);
+                expect(getMyIdStub).to.be.called;
+                done();
+            });
+        });
+
+        it('does not fail if get my ID fails', (done) => {
+            const mockAuth = 'mocki mocki';
+            const initStub = sinon.stub(spotifyAuth, 'init').resolves(mockAuth);
+            const setAuthStub = sinon.stub(spotifyHelper, 'setAuth');
+            const getMyIdStub = sinon.stub(spotifyHelper, 'getMyId').rejects();
+            const cliSessionLogStub = sinon.stub(vorpal.session, 'log');
+
+            vorpal.exec('spotify init', () => {
+                initStub.restore();
+                setAuthStub.restore();
+                getMyIdStub.restore();
+                cliSessionLogStub.restore();
+                expect(initStub).to.be.calledOnce; // eslint-disable-line
+                expect(setAuthStub).to.be.calledWith(mockAuth);
+                expect(getMyIdStub).to.be.called;
+                expect(cliSessionLogStub).to.be.called;
                 done();
             });
         });

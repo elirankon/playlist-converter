@@ -7,6 +7,9 @@ module.exports = (cli) => {
             .init(cli.session)
             .then((authToken) => {
                 spotifyHelper.setAuth(authToken);
+                spotifyHelper.getMyId().catch((ex) => {
+                    cli.session.log('failed to get my ID', { ex });
+                });
                 callback('Spotify Initialized');
             })
             .catch((err) => {

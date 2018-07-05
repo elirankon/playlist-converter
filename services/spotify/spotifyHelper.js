@@ -1,9 +1,11 @@
 const SpotifyApi = require('spotify-web-api-node');
+const Promise = require('bluebird');
 const utils = require('../../utils');
 
 const spotifyApi = new SpotifyApi();
 let loadedPlaylists = [];
 let loadedItems = [];
+let currentUserId;
 
 async function getUserPlaylists({ next = 0, limit = 20 }) {
     return spotifyApi.getUserPlaylists({ limit, offset: next });
@@ -20,6 +22,39 @@ async function getUserPlaylistTracks({
 
 function extractValuesFromPlaylist(item) {
     return `${item.track.name} ${item.track.artists.map(artist => artist.name).join(' ')}`;
+}
+
+async function searchForTrack(query) {
+    const response = await spotifyApi.search(query, ['track'], { limit: 1 });
+    const { uri, name } = response.body.items[0];
+    console.debug(`found track ${name} - ${uri} for query ${query}`);
+    return { uri, name };
+}
+
+async function getMyId() {
+    const currentUser = await spotifyApi.getMe();
+    currentUserId = currentUser.body.id;
+    return currentUserId;
+}
+
+async function createPlaylist({ title }) {
+    const newPlaylistResponse = await spotifyApi.createPlaylist(currentUserId, title);
+    console.debug(
+        `created playlist ${newPlaylistResponse.body.name} with id ${newPlaylistResponse.body.id}`,
+    );
+    return newPlaylistResponse.body.id;
+}
+
+async function addTracksToPlaylist({ tracks, playlistId }) {
+    await spotifyApi.addTracksToPlaylist(currentUserId, playlistId, tracks.map(track => track.uri));
+
+    return playlistId;
+}
+
+async function generateNewPlaylist({ items, title }) {
+    const playlistId = await createPlaylist({ title });
+    const tracks = await Promise.map(items, searchForTrack, { concurrency: 1 });
+    return addTracksToPlaylist({ tracks, playlistId });
 }
 
 async function loadPlaylistTracks(userId, playlistId) {
@@ -90,10 +125,12 @@ module.exports = {
         spotifyApi.setAccessToken(authToken);
         return authToken;
     },
+    getMyId,
     loadUserPlaylist,
     listLoaded,
     resetLoadedItems: () => {
         loadedItems = [];
         loadedPlaylists = [];
     },
+    generateNewPlaylist,
 };
