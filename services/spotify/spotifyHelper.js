@@ -40,7 +40,6 @@ async function searchForTrack(query) {
 async function getMyId() {
     const currentUser = await spotifyApi.getMe();
     currentUserId = currentUser.body.id;
-    console.log('<<<< currentID', currentUserId);
     return currentUserId;
 }
 
@@ -54,7 +53,6 @@ async function createPlaylist({ title }) {
         );
         return newPlaylistResponse.body.id;
     } catch (ex) {
-        console.log(ex);
         throw ex;
     }
 }

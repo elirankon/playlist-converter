@@ -16,6 +16,126 @@ chai.use(sinonChai);
 const { expect } = chai;
 
 describe('spotifyHelper', () => {
+    describe('#getMyId', () => {
+        it('gets the current user from spotify', async () => {
+            const getMeStub = sinon
+                .stub(SpotifyApi.prototype, 'getMe')
+                .resolves({ body: { id: 'moo' } });
+
+            await spotifyHelper.getMyId();
+
+            expect(getMeStub).to.be.called; // eslint-disable-line no-unused-expressions
+
+            getMeStub.restore();
+        });
+
+        it('sets the current user Id', async () => {
+            const getMeStub = sinon
+                .stub(SpotifyApi.prototype, 'getMe')
+                .resolves({ body: { id: 'moo' } });
+
+            const id = await spotifyHelper.getMyId();
+
+            expect(id).to.eql('moo');
+
+            getMeStub.restore();
+        });
+    });
+
+    describe('#generateNewPlaylist', () => {
+        it('creates a playlist', (done) => {
+            const createPlaylistStub = sinon.stub(SpotifyApi.prototype, 'createPlaylist').throws();
+
+            spotifyHelper.generateNewPlaylist({ items: [], title: 'gaga' }).catch(() => {
+                createPlaylistStub.restore();
+                // eslint-disable-next-line no-unused-expressions
+                expect(createPlaylistStub).to.be.called;
+                done();
+            });
+        });
+
+        it('loops through tracks and searches in spotify', async () => {
+            const createPlaylistStub = sinon.stub(SpotifyApi.prototype, 'createPlaylist').resolves({
+                body: { name: 'gaga', id: 'gagaid' },
+            });
+
+            const searchStub = sinon.stub(SpotifyApi.prototype, 'search').resolves({
+                body: {
+                    tracks: {
+                        items: [{ uri: 'uriuri', name: 'namename' }],
+                    },
+                },
+            });
+
+            const addToPlaylistStub = sinon
+                .stub(SpotifyApi.prototype, 'addTracksToPlaylist')
+                .resolves();
+
+            await spotifyHelper.generateNewPlaylist({
+                items: ['gallgaa', 'gagaga33'],
+                title: 'gaga',
+            });
+
+            createPlaylistStub.restore();
+            searchStub.restore();
+            addToPlaylistStub.restore();
+            // eslint-disable-next-line no-unused-expressions
+            expect(searchStub).to.be.calledTwice;
+        });
+
+        it('adds the results to the new playlist', async () => {
+            const createPlaylistStub = sinon.stub(SpotifyApi.prototype, 'createPlaylist').resolves({
+                body: { name: 'gaga', id: 'gagaid' },
+            });
+
+            const searchStub = sinon.stub(SpotifyApi.prototype, 'search').resolves({
+                body: {
+                    tracks: {
+                        items: [{ uri: 'uriuri', name: 'namename' }],
+                    },
+                },
+            });
+
+            const addToPlaylistStub = sinon
+                .stub(SpotifyApi.prototype, 'addTracksToPlaylist')
+                .resolves();
+
+            await spotifyHelper.generateNewPlaylist({ items: ['gallgaa'], title: 'gaga' });
+
+            createPlaylistStub.restore();
+            searchStub.restore();
+            addToPlaylistStub.restore();
+            // eslint-disable-next-line no-unused-expressions
+            expect(addToPlaylistStub).to.be.calledWith('moo', 'gagaid', ['uriuri']);
+        });
+
+        it('ignores queries without results', async () => {
+            const createPlaylistStub = sinon.stub(SpotifyApi.prototype, 'createPlaylist').resolves({
+                body: { name: 'gaga', id: 'gagaid' },
+            });
+
+            const searchStub = sinon.stub(SpotifyApi.prototype, 'search').resolves({
+                body: {
+                    tracks: {
+                        items: [],
+                    },
+                },
+            });
+
+            const addToPlaylistStub = sinon
+                .stub(SpotifyApi.prototype, 'addTracksToPlaylist')
+                .resolves();
+
+            await spotifyHelper.generateNewPlaylist({ items: ['gallgaa'], title: 'gaga' });
+
+            createPlaylistStub.restore();
+            searchStub.restore();
+            addToPlaylistStub.restore();
+            // eslint-disable-next-line no-unused-expressions
+            expect(addToPlaylistStub).to.be.calledWith('moo', 'gagaid', []);
+        });
+    });
+
     describe('#setAuth', () => {
         it('sets the auth in spotifyApi', async () => {
             const mockAuth = 'mockmock';
