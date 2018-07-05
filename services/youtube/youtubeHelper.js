@@ -15,7 +15,7 @@ function processAutoGenerateYTMusicVideo(video) {
 
     return title
         .toLowerCase()
-        .replace(/(official video|official audio|music video)/g, '')
+        .replace(/(official video|official audio|music video|official)/g, '')
         .replace(/\W/g, ' ');
 }
 

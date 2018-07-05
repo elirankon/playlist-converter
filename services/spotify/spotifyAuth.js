@@ -55,7 +55,7 @@ function openWebBrowser(cliSession, url) {
                 credentials.client_id
             }&redirect_uri=${encodeURIComponent(
                 `${url}/spotify`,
-            )}&scope=playlist-read-private%20user-read-email&response_type=token&state=123`,
+            )}&scope=playlist-read-private%20user-read-email%20playlist-modify-private%20playlist-modify-public&response_type=token&state=123`,
         );
     });
 }

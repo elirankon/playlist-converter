@@ -1,4 +1,5 @@
 const SpotifyApi = require('spotify-web-api-node');
+const _ = require('lodash');
 const Promise = require('bluebird');
 const utils = require('../../utils');
 
@@ -26,7 +27,12 @@ function extractValuesFromPlaylist(item) {
 
 async function searchForTrack(query) {
     const response = await spotifyApi.search(query, ['track'], { limit: 1 });
-    const { uri, name } = response.body.items[0];
+    if (response.body.tracks.items.length === 0) {
+        console.debug(`no results found for ${query}`);
+        return;
+    }
+
+    const { uri, name } = response.body.tracks.items[0];
     console.debug(`found track ${name} - ${uri} for query ${query}`);
     return { uri, name };
 }
@@ -34,15 +40,23 @@ async function searchForTrack(query) {
 async function getMyId() {
     const currentUser = await spotifyApi.getMe();
     currentUserId = currentUser.body.id;
+    console.log('<<<< currentID', currentUserId);
     return currentUserId;
 }
 
 async function createPlaylist({ title }) {
-    const newPlaylistResponse = await spotifyApi.createPlaylist(currentUserId, title);
-    console.debug(
-        `created playlist ${newPlaylistResponse.body.name} with id ${newPlaylistResponse.body.id}`,
-    );
-    return newPlaylistResponse.body.id;
+    try {
+        const newPlaylistResponse = await spotifyApi.createPlaylist(currentUserId, title);
+        console.debug(
+            `created playlist ${newPlaylistResponse.body.name} with id ${
+                newPlaylistResponse.body.id
+            }`,
+        );
+        return newPlaylistResponse.body.id;
+    } catch (ex) {
+        console.log(ex);
+        throw ex;
+    }
 }
 
 async function addTracksToPlaylist({ tracks, playlistId }) {
@@ -53,7 +67,7 @@ async function addTracksToPlaylist({ tracks, playlistId }) {
 
 async function generateNewPlaylist({ items, title }) {
     const playlistId = await createPlaylist({ title });
-    const tracks = await Promise.map(items, searchForTrack, { concurrency: 1 });
+    const tracks = _.compact(await Promise.map(items, searchForTrack, { concurrency: 1 }));
     return addTracksToPlaylist({ tracks, playlistId });
 }
 
