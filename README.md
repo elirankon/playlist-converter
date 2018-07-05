@@ -24,7 +24,7 @@ _An open source offering for migrating playlists between different streaming ser
 | Service | Load Items (as source) | Generate Playlists (as target) |
 | :-----: | :--------------------: | :----------------------------: |
 | Youtube | :white_check_mark:     |       :white_check_mark:       |
-| Spotify |    :white_check_mark:  |       :X:                      |
+| Spotify |    :white_check_mark:  |       :x:                      |
 
  ## Setup client credentials and stuff
  You need to make sure you have setup the environment for services you want to use:
